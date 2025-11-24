@@ -2,10 +2,17 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('hero');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,6 +35,20 @@ const Index = () => {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     element?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: 'Заявка отправлена! 🎉',
+      description: 'Мы свяжемся с тобой в течение 10 минут для оформления покупки.',
+    });
+    setIsDialogOpen(false);
+    setFormData({ name: '', email: '', phone: '' });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const zodiacSigns = [
@@ -68,9 +89,71 @@ const Index = () => {
               );
             })}
           </div>
-          <Button size="sm" className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
-            Купить гайд
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
+                Купить гайд
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  Получи гайд BE YOU
+                </DialogTitle>
+                <DialogDescription className="text-base">
+                  Заполни форму и начни путь к лучшей версии себя уже сегодня
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Твое имя</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Анна"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="border-border"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="anna@example.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    className="border-border"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Телефон</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="+7 (999) 123-45-67"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    required
+                    className="border-border"
+                  />
+                </div>
+                <div className="pt-4">
+                  <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-lg py-6">
+                    Оформить за 1990₽
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center mt-3">
+                    Нажимая кнопку, ты соглашаешься с политикой конфиденциальности
+                  </p>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </nav>
 
@@ -419,9 +502,13 @@ const Index = () => {
           <p className="text-xl mb-8 text-background/80">
             Гайд, который изменит твою жизнь
           </p>
-          <Button size="lg" variant="outline" className="bg-background text-foreground hover:bg-background/90 text-lg px-8 py-6">
-            Купить гайд за 1990₽
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="lg" variant="outline" className="bg-background text-foreground hover:bg-background/90 text-lg px-8 py-6">
+                Купить гайд за 1990₽
+              </Button>
+            </DialogTrigger>
+          </Dialog>
           <div className="mt-12 text-background/60 text-sm">
             <p>© 2026 BE YOU. Все права защищены</p>
           </div>
